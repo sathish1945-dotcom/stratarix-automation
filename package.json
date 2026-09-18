@@ -1,0 +1,9 @@
+{
+  "name": "stratarix-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Automation services and client portal",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": { "start": "node server.mjs", "test": "node --test auth.test.mjs" }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Stratarix Automation — practical workflows, connected tools, and a simpler way to work. Explore automation services and discuss your project.">
+  <meta name="theme-color" content="#171923">
+  <title>Stratarix — Automation, made practical</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#home"><span class="brand-mark">s</span><span>stratarix<span class="brand-sub">AUTOMATION STUDIO</span></span></a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav id="nav">
+        <a href="#home" data-page="home"><span data-icon="home"></span>Overview</a>
+        <a href="#services" data-page="services"><span data-icon="workflow"></span>Automations<span class="nav-count">06</span></a>
+        <a href="#contact" data-page="contact"><span data-icon="message"></span>Contact us</a>
+        <a href="#settings" data-page="settings"><span data-icon="settings"></span>Settings</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><span data-icon="spark"></span><h3>A workflow in mind?</h3><p>Let’s turn repetitive work into a simpler process.</p><a href="#contact">Discuss your project <span aria-hidden="true">↗</span></a></div>
+        <a class="account" id="account-link" href="#login"><span class="avatar" data-icon="user"></span><span><strong id="account-name">Your workspace</strong><small id="account-detail">Log in to get started</small></span><span aria-hidden="true">›</span></a>
+      </div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar"><div class="breadcrumb"><button class="icon-button mobile-menu" id="menu-button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar"><span data-icon="menu"></span></button><span>Workspace</span><span class="slash">/</span><strong id="page-label">Overview</strong></div><div class="top-actions"><span class="preview-tag">PREVIEW</span><a class="login-link" id="header-login" href="#login">Log in</a><a class="button small" id="header-register" href="#register">Create account <span aria-hidden="true">↗</span></a></div></header>
+      <main id="main" tabindex="-1"></main>
+      <footer><span>© <span id="year"></span> Stratarix Automation</span><span>Less busywork. More possibility.</span><a href="#contact">Get in touch ↗</a></footer>
+    </div>
+  </div>
+  <button id="menu-overlay" aria-label="Close menu" hidden></button>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <noscript>This website requires JavaScript. You can contact us at p.satish9988@gmail.com.</noscript>
+</body>
+</html>
