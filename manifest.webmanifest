@@ -1,0 +1,24 @@
+{
+  "id": "/",
+  "name": "AI Life Manager",
+  "short_name": "Life Manager",
+  "description": "Tell your AI assistant what to remember and it turns everyday language into organised tasks, reminders and follow-ups.",
+  "start_url": "./#dashboard",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#5b3df5",
+  "background_color": "#f6f7fc",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ask the assistant", "short_name": "Assistant", "url": "./#assistant" },
+    { "name": "Today's tasks", "short_name": "Tasks", "url": "./#tasks" }
+  ]
+}
