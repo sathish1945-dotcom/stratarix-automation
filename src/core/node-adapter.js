@@ -9,8 +9,14 @@
  */
 
 export function nodeRequestToWebRequest(req, { origin } = {}) {
-  const host = req.headers.host || 'localhost';
-  const base = origin || `http://${host}`;
+  // Behind a TLS-terminating proxy (Vercel, tunnels, previews) the socket is
+  // plain HTTP, so the public scheme/host come from the forwarded headers.
+  // This only affects URL construction — an attacker who could forge those
+  // headers would still have to send a matching Origin from their own browser.
+  const forwardedProto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+  const forwardedHost = String(req.headers['x-forwarded-host'] || '').split(',')[0].trim();
+  const host = forwardedHost || req.headers.host || 'localhost';
+  const base = origin || `${forwardedProto || 'http'}://${host}`;
   const url = new URL(req.url || '/', base);
 
   const headers = new Headers();

@@ -186,6 +186,48 @@ test('account lifecycle over HTTP: CSRF, cookies, rotation and errors', async ()
   }
 });
 
+test('same-origin writes work behind a TLS-terminating proxy', async () => {
+  // No APP_ORIGIN configured: the public origin must come from the forwarded
+  // headers, otherwise a proxied deployment would reject its own users.
+  const server = await makeServer({
+    databasePath: ':memory:',
+    env: { ...process.env, NODE_ENV: 'production', APP_ORIGIN: '' },
+  });
+  const origin = await listen(server);
+  try {
+    const publicOrigin = 'https://life.example.app';
+    const response = await fetch(`${origin}/api/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Stratarix-Request': '1',
+        Origin: publicOrigin,
+        'X-Forwarded-Proto': 'https',
+        'X-Forwarded-Host': 'life.example.app',
+      },
+      body: JSON.stringify({ name: 'Proxy User', email: 'proxy@example.test', password: PASSWORD }),
+    });
+    assert.equal(response.status, 201, 'the forwarded public origin is accepted');
+    assert.match(response.headers.getSetCookie()[0], /^__Host-stratarix_session=/);
+
+    // A genuinely foreign origin is still refused.
+    const foreign = await fetch(`${origin}/api/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Stratarix-Request': '1',
+        Origin: 'https://evil.example',
+        'X-Forwarded-Proto': 'https',
+        'X-Forwarded-Host': 'life.example.app',
+      },
+      body: JSON.stringify({ name: 'Attacker', email: 'attacker@example.test', password: PASSWORD }),
+    });
+    assert.equal(foreign.status, 403);
+  } finally {
+    await close(server);
+  }
+});
+
 test('repeated failed logins are rate limited with Retry-After', async () => {
   const server = await makeServer({ databasePath: ':memory:', env: { ...process.env, NODE_ENV: 'production' } });
   const origin = await listen(server);
