@@ -3,3 +3,6 @@ node_modules/
 .env
 *.log
 test-results/
+dist/
+.vercel/
+.DS_Store

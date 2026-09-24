@@ -2,39 +2,235 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Stratarix Automation — practical workflows, connected tools, and a simpler way to work. Explore automation services and discuss your project.">
-  <meta name="theme-color" content="#171923">
-  <title>Stratarix — Automation, made practical</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="AI Life Manager — tell your assistant what to remember and it turns everyday language into organised tasks, reminders and follow-ups.">
+  <meta name="theme-color" content="#5b3df5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0d17" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AI Life Manager">
+  <meta name="format-detection" content="telephone=no">
+  <title>AI Life Manager · Your day, handled</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css">
-  <script src="./app.js" defer></script>
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./js/main.js" type="module"></script>
 </head>
-<body>
-  <a class="skip" href="#main">Skip to content</a>
-  <div class="shell">
+<body data-theme="light">
+  <a class="skip-link" href="#view">Skip to content</a>
+
+  <!-- Icon sprite: kept in one place so the interface never loads icon fonts or images. -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20l1.4-4.9A8 8 0 1 1 21 11.5Z"/><path d="M9 10h6M9 13.5h4"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4Z"/><path d="M9.5 20v-5.5h5V20"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+      <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/></symbol>
+      <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3.5v3M16 3.5v3M3.5 10h17"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></symbol>
+      <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M17 3.5 20 6.5 17 9.5"/><path d="M20 6.5H7A3.5 3.5 0 0 0 3.5 10"/><path d="M7 20.5 4 17.5 7 14.5"/><path d="M4 17.5h13A3.5 3.5 0 0 0 20.5 14"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l.8 13h9.4l.8-13"/><path d="M10.5 11v5.5M13.5 11v5.5"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16Z"/><path d="M14.5 5.5 18.5 9.5"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2.5h-15Z"/><path d="M10 19.5a2 2 0 0 0 4 0"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M4.5 12 20 5l-5.5 15-2.7-5.8Z"/><path d="m11.8 14.2 3.5-3.6"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5v-1.8a6.5 6.5 0 0 1 15 0v1.8"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M4.2 7.5l1.9 1.1M17.9 15.4l1.9 1.1M4.2 16.5l1.9-1.1M17.9 8.6l1.9-1.1"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 7 8.5-7"/></symbol>
+      <symbol id="i-workflow" viewBox="0 0 24 24"><rect x="3" y="3" width="6.5" height="6.5" rx="2"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="2"/><path d="M14.5 6.5H18v8M9.5 6.5H6v11h8"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M8 16.5V12M12.5 16.5V8M17 16.5v-6"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 7.5 3.5v5.2c0 5.4-7.5 9.3-7.5 9.3S4.5 17.1 4.5 11.7V6.5Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+      <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 4l18 16"/><path d="M5 10.5a13 13 0 0 1 6-3.1M13.5 7.4a13 13 0 0 1 5.5 3.1M8 14a8 8 0 0 1 3-1.5M16 13.9a8 8 0 0 1 1.6 1M12 18.5h.01"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.4h.01"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10"/><path d="M19.5 4.5 11 13"/><path d="M18 14.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V7.5A1.5 1.5 0 0 1 5 6h4.5"/></symbol>
+      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3s5 4.2 5 9a5 5 0 0 1-10 0c0-2 1-3.6 2-5 .3 1.4 1 2.3 2 2.6C11 7.4 11 5.2 12 3Z"/></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13.5 6.5 5h11L20 13.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19Z"/><path d="M4 13.5h4l1.2 2.2h5.6L16 13.5h4"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5V5M12 19v2.5M4.2 4.2 6 6M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8 6 18M18 6l1.8-1.8"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4.5H6.5A1.5 1.5 0 0 0 5 6v12a1.5 1.5 0 0 0 1.5 1.5H14"/><path d="M17 8.5 20.5 12 17 15.5M10 12h10"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v10.5M7.5 11 12 15.5 16.5 11"/><path d="M5 19.5h14"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="app" id="app" data-nav="closed">
+    <div class="scrim" id="scrim" hidden></div>
+
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-      <a class="brand" href="#home"><span class="brand-mark">s</span><span>stratarix<span class="brand-sub">AUTOMATION STUDIO</span></span></a>
-      <div class="nav-label">WORKSPACE</div>
-      <nav id="nav">
-        <a href="#home" data-page="home"><span data-icon="home"></span>Overview</a>
-        <a href="#services" data-page="services"><span data-icon="workflow"></span>Automations<span class="nav-count">06</span></a>
-        <a href="#contact" data-page="contact"><span data-icon="message"></span>Contact us</a>
-        <a href="#settings" data-page="settings"><span data-icon="settings"></span>Settings</a>
+      <div class="sidebar-head">
+        <a class="brand" href="#home" aria-label="AI Life Manager home">
+          <span class="brand-mark"><svg class="ico"><use href="#i-spark"></use></svg></span>
+          <span class="brand-text">
+            <strong>AI Life Manager</strong>
+            <small>by Stratarix</small>
+          </span>
+        </a>
+        <button class="icon-btn sidebar-close" id="sidebar-close" type="button" aria-label="Close navigation">
+          <svg class="ico"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <nav class="nav" id="nav">
+        <p class="nav-label">Workspace</p>
+        <a href="#dashboard" data-route="dashboard"><svg class="ico"><use href="#i-home"></use></svg><span>Dashboard</span></a>
+        <a href="#assistant" data-route="assistant"><svg class="ico"><use href="#i-chat"></use></svg><span>AI assistant</span><span class="pill" id="nav-ai-state">AI</span></a>
+        <a href="#tasks" data-route="tasks"><svg class="ico"><use href="#i-check-circle"></use></svg><span>Tasks</span><span class="pill pill-count" id="nav-task-count" hidden>0</span></a>
+        <p class="nav-label">Stratarix</p>
+        <a href="#services" data-route="services"><svg class="ico"><use href="#i-workflow"></use></svg><span>Automations</span></a>
+        <a href="#contact" data-route="contact"><svg class="ico"><use href="#i-mail"></use></svg><span>Contact us</span></a>
+        <a href="#settings" data-route="settings"><svg class="ico"><use href="#i-settings"></use></svg><span>Settings</span></a>
       </nav>
-      <div class="sidebar-bottom">
-        <div class="help-card"><span data-icon="spark"></span><h3>A workflow in mind?</h3><p>Let’s turn repetitive work into a simpler process.</p><a href="#contact">Discuss your project <span aria-hidden="true">↗</span></a></div>
-        <a class="account" id="account-link" href="#login"><span class="avatar" data-icon="user"></span><span><strong id="account-name">Your workspace</strong><small id="account-detail">Log in to get started</small></span><span aria-hidden="true">›</span></a>
+
+      <div class="sidebar-foot">
+        <section class="help-card">
+          <svg class="ico"><use href="#i-spark"></use></svg>
+          <h3>Try the assistant</h3>
+          <p>“Remind me to call Arun in 30 minutes.”</p>
+          <a class="btn btn-soft btn-sm" href="#assistant">Open the assistant</a>
+        </section>
+        <a class="account" id="account-chip" href="#login">
+          <span class="avatar" id="account-avatar"><svg class="ico"><use href="#i-user"></use></svg></span>
+          <span class="account-text">
+            <strong id="account-name">Your workspace</strong>
+            <small id="account-detail">Sign in to save tasks</small>
+          </span>
+          <svg class="ico account-chevron"><use href="#i-arrow-right"></use></svg>
+        </a>
       </div>
     </aside>
-    <div class="main-shell">
-      <header class="topbar"><div class="breadcrumb"><button class="icon-button mobile-menu" id="menu-button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar"><span data-icon="menu"></span></button><span>Workspace</span><span class="slash">/</span><strong id="page-label">Overview</strong></div><div class="top-actions"><span class="preview-tag">PREVIEW</span><a class="login-link" id="header-login" href="#login">Log in</a><a class="button small" id="header-register" href="#register">Create account <span aria-hidden="true">↗</span></a></div></header>
-      <main id="main" tabindex="-1"></main>
-      <footer><span>© <span id="year"></span> Stratarix Automation</span><span>Less busywork. More possibility.</span><a href="#contact">Get in touch ↗</a></footer>
+
+    <div class="main-col">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn only-mobile" id="sidebar-open" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+            <svg class="ico"><use href="#i-menu"></use></svg>
+          </button>
+          <div class="crumb">
+            <span class="crumb-root">Workspace</span>
+            <span class="crumb-sep" aria-hidden="true">/</span>
+            <strong id="page-title">Dashboard</strong>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+            <svg class="ico" id="theme-icon"><use href="#i-moon"></use></svg>
+          </button>
+          <a class="btn btn-primary btn-sm" id="header-cta" href="#register">Create free account</a>
+          <a class="btn btn-ghost btn-sm" id="header-signin" href="#login">Sign in</a>
+        </div>
+      </header>
+
+      <div class="offline-bar" id="offline-bar" role="status" hidden>
+        <svg class="ico"><use href="#i-wifi-off"></use></svg>
+        <div><strong>You are offline.</strong> Changes are saved when the connection returns; reminders already scheduled in this tab still work.</div>
+      </div>
+
+      <main class="view" id="view" tabindex="-1">
+        <div class="view-loading" aria-hidden="true">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton-grid">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <span>© <span id="year">2026</span> Stratarix Automation · AI Life Manager</span>
+        <span class="footer-links">
+          <a href="#services">Automations</a>
+          <a href="#contact">Contact</a>
+          <a href="#settings">Settings</a>
+        </span>
+      </footer>
     </div>
   </div>
-  <button id="menu-overlay" aria-label="Close menu" hidden></button>
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <noscript>This website requires JavaScript. You can contact us at p.satish9988@gmail.com.</noscript>
+
+  <div class="toast-stack" id="toast-stack" role="status" aria-live="polite"></div>
+
+  <dialog class="modal" id="task-modal" aria-labelledby="task-modal-title">
+    <form method="dialog" class="modal-card" id="task-form">
+      <header class="modal-head">
+        <h2 id="task-modal-title">New task</h2>
+        <button class="icon-btn" type="button" id="task-modal-close" aria-label="Close dialog">
+          <svg class="ico"><use href="#i-close"></use></svg>
+        </button>
+      </header>
+      <div class="modal-body">
+        <div class="banner banner-error" id="task-form-error" role="alert" hidden></div>
+        <label class="field">
+          <span class="field-label">Task</span>
+          <input class="input" id="task-title" name="title" maxlength="160" required autocomplete="off" placeholder="Submit my assignment">
+        </label>
+        <label class="field">
+          <span class="field-label">Notes <span class="muted">(optional)</span></span>
+          <textarea class="input" id="task-description" name="description" rows="2" maxlength="2000" placeholder="Anything to remember about this task"></textarea>
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Due date</span>
+            <input class="input" id="task-date" name="date" type="date">
+          </label>
+          <label class="field">
+            <span class="field-label">Time</span>
+            <input class="input" id="task-time" name="time" type="time">
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Repeat</span>
+            <select class="input" id="task-recurrence" name="recurrence">
+              <option value="">Does not repeat</option>
+              <option value="daily">Every day</option>
+              <option value="weekdays">Every weekday</option>
+              <option value="weekly">Every week</option>
+              <option value="biweekly">Every 2 weeks</option>
+              <option value="monthly">Every month</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Priority</span>
+            <select class="input" id="task-priority" name="priority">
+              <option value="normal">Normal</option>
+              <option value="low">Low</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </label>
+        </div>
+        <p class="field-hint" id="task-form-hint">Leave the date empty for a task without a deadline.</p>
+      </div>
+      <footer class="modal-foot">
+        <button class="btn btn-ghost" type="button" id="task-form-cancel">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="task-form-submit">Save task</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="confirm-modal" aria-labelledby="confirm-title">
+    <div class="modal-card modal-card-sm">
+      <h2 id="confirm-title">Are you sure?</h2>
+      <p id="confirm-body">This cannot be undone.</p>
+      <footer class="modal-foot">
+        <button class="btn btn-ghost" type="button" id="confirm-cancel">Cancel</button>
+        <button class="btn btn-danger" type="button" id="confirm-ok">Delete</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <noscript>
+    <div class="noscript">
+      <h1>JavaScript is required</h1>
+      <p>The AI Life Manager interface needs JavaScript to run. You can still reach us at
+        <a href="mailto:p.satish9988@gmail.com">p.satish9988@gmail.com</a>.</p>
+    </div>
+  </noscript>
 </body>
 </html>

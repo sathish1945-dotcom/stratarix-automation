@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#5b3df5">
+  <title>Offline · AI Life Manager</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-theme="light">
+  <main class="view offline-page">
+    <section class="section">
+      <div class="card center stack">
+        <svg class="ico ico-lg" aria-hidden="true"><use href="#i-wifi-off"></use></svg>
+        <h1>You are offline</h1>
+        <p class="muted">AI Life Manager could not reach the network. Your tasks are safe on the server — reconnect and everything will be back in place.</p>
+        <p class="text-sm muted">Your reminders still fire for the tasks already loaded in this tab.</p>
+        <div class="row justify-center">
+          <a class="btn btn-primary" href="./#dashboard">Try again</a>
+          <a class="btn btn-ghost" href="./#home">Go to the home page</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 4l18 16"/><path d="M5 10.5a13 13 0 0 1 6-3.1M13.5 7.4a13 13 0 0 1 5.5 3.1M8 14a8 8 0 0 1 3-1.5M16 13.9a8 8 0 0 1 1.6 1M12 18.5h.01"/></symbol>
+  </svg>
+</body>
+</html>

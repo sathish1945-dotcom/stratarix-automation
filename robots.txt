@@ -1,0 +1,16 @@
+# AI Life Manager — public marketing pages may be indexed, private areas may not.
+User-agent: *
+Allow: /$
+Allow: /#home
+Allow: /#services
+Allow: /#contact
+Allow: /styles.css
+Allow: /favicon.svg
+Disallow: /api/
+Disallow: /#dashboard
+Disallow: /#assistant
+Disallow: /#tasks
+Disallow: /#settings
+Disallow: /#login
+Disallow: /#register
+Disallow: /offline.html

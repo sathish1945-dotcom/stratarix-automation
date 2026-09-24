@@ -1,83 +1,123 @@
-# Stratarix Automation
+# AI Life Manager — Stratarix Automation
 
-Automation services website and client account backend, prepared for **sathish1945-dotcom**.
+A chat-first personal task manager. You tell the assistant what to remember in
+plain language ("Remind me to submit my assignment tomorrow at 8 PM") and it
+creates the task with the right date, time, repeat rule and priority. It also
+keeps the Stratarix automation pages, accounts and the Node backend in the same
+project.
 
 Contact: **p.satish9988@gmail.com**
 
-## Included
+## What is in the box
 
-- Responsive overview, mobile navigation, and six clearly labelled example automation services.
-- Login and registration pages with real account creation when the Node server runs.
-- SQLite account persistence, scrypt password hashing, HttpOnly session cookies, session expiry, same-origin write protection, validation, and basic request throttling.
-- Profile editing and logout. Light/dark, compact layout, and reduced-motion preferences are saved in the browser.
-- Contact page with Gmail compose, email copying, and a prefilled project enquiry. Visitors send the email themselves; no email is sent automatically.
-- GitHub Pages preview served from the main branch. Pages displays the interface and an explicit demo account; it cannot run the Node backend.
+- **Chat-first tasks.** Natural-language messages are interpreted by Gemini on
+  the server (`/api/chat`); the interpreted task is shown while it is saved, and
+  manual creation/editing stays available in the task dialog.
+- **Real AI on the server only.** The API key lives in an environment variable
+  and is never sent to the browser. Timeouts, rate limits, invalid model output
+  and outages all degrade to a friendly message plus a deterministic built-in
+  parser, so a reminder is never lost silently.
+- **Dashboard and task list.** Today, upcoming, overdue and completed are always
+  one click apart, with create, edit, reschedule, complete/reopen and delete.
+- **Reminders.** While a tab is open the app asks the server which tasks are due
+  and raises a real browser notification with the task title; clicking it focuses
+  the app on the task list. Permission is explained, requested once from a button,
+  and never re-requested after a refusal.
+- **Accounts.** Registration signs you in immediately, sessions are HttpOnly
+  cookies with server-side records, logout deletes the session server-side, and
+  every task query is scoped to the signed-in user.
+- **Design system.** One palette, one type scale and one set of components across
+  every screen, light/dark themes, reduced-motion and compact modes, responsive
+  from small phones to wide desktops, and an installable PWA manifest with an
+  offline page.
 
-All service descriptions are temporary examples. No automation executes and no external services are connected. There are no fabricated clients, staff counts, testimonials, prices, or delivery promises.
+## Run it locally
 
-## Run on Windows PowerShell
+Node.js 24 or newer.
 
-Install Node.js 24 or newer from the official Node.js website. Extract this project under **D:\sathishai\stratarix-automation**.
-
-```powershell
-Set-Location D:\sathishai\stratarix-automation
-node --version
-npm start
+```bash
+npm install          # only needed for the test suite (jsdom)
+npm start            # http://localhost:3000
 ```
 
-Open **http://localhost:3000**. No npm package installation is required. The database is created at `data/accounts.sqlite`; never commit it to GitHub. Register using the website, log out, and log back in. Data survives a server restart.
+The database defaults to an in-memory store; set `DATABASE_PATH=./data/app.sqlite`
+to keep accounts and tasks across restarts. Copy `.env.example` for the full list.
 
-```powershell
-npm test
+```bash
+npm test             # every suite (unit, API, security, server, UI)
+npm run test:ui      # jsdom end-to-end flows through the real frontend
 ```
 
-## Publish the preview on GitHub Pages
-
-Repository: https://github.com/sathish1945-dotcom/stratarix-automation
-
-1. Sign in to GitHub as **sathish1945-dotcom** and create a public repository named `stratarix-automation`. Leave it empty (do not add a README).
-2. In PowerShell, from the project folder, run:
-
-```powershell
-git init -b main
-git add .
-git commit -m "Create Stratarix automation client portal"
-git remote add origin https://github.com/sathish1945-dotcom/stratarix-automation.git
-git push -u origin main
-```
-
-3. Open the repository's **Settings → Pages**, choose **Deploy from a branch**, select **main** and **/(root)**, and save.
-4. GitHub builds the preview and shows the live link in Pages settings. Run `npm test` locally before pushing updates.
-
-If a repository with this name already exists, inspect it before pushing. Do not force-push over unrelated work.
-
-## Run accounts on a hosted backend
-
-GitHub stores this complete project; GitHub Pages serves static files only. To provide real accounts publicly, deploy the Node server and frontend together on a Node-compatible host with a persistent disk. Use a single server instance for this SQLite MVP.
-
-Environment variables:
+## Environment variables
 
 | Variable | Purpose |
 |---|---|
-| `NODE_ENV=production` | Enables Secure cookies and HSTS; requires an HTTPS origin. |
-| `APP_ORIGIN` | Exact public HTTPS origin, without trailing slash. |
-| `HOST=0.0.0.0` | Allows the hosting platform to reach the process. |
-| `PORT` | Listening port; defaults to 3000. |
-| `DATABASE_PATH` | Absolute path on persistent storage for the SQLite database. |
+| `GEMINI_API_KEY` | Server-side Gemini key. Without it the app still works using the built-in parser and says so in the interface. |
+| `GEMINI_MODEL` | Model name; defaults to `gemini-3.5-flash`. |
+| `GEMINI_TIMEOUT_MS` / `GEMINI_MAX_RETRIES` | Provider timeout (15000) and retry count (2). |
+| `AI_OFFLINE_FALLBACK` | `false` disables the deterministic parser fallback. |
+| `DATABASE_PATH` | SQLite file for the local Node server. |
+| `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` | libSQL over HTTP — use this on serverless hosting, where the filesystem is read-only. |
+| `NODE_ENV=production` | Secure cookie names/flags, HSTS. |
+| `APP_ORIGIN` | Exact public HTTPS origin, no trailing slash. |
+| `SESSION_TTL_MS` | Session lifetime in milliseconds (default 7 days). |
+| `TRUST_PROXY=true` | Only when a trusted proxy sets `X-Forwarded-For`. |
+| `HOST` / `PORT` | Bind address and port (default `127.0.0.1:3000`). |
 
-The server binds to localhost by default for local development. Put the production server behind the hosting platform's HTTPS proxy. Do not expose a development server with unencrypted account traffic. Do not put passwords, cookies, email credentials, or API keys in GitHub or frontend files.
+Secrets belong in your host's environment settings, never in the repository.
+`.env` is git-ignored and `.env.example` documents every name.
 
-## MVP limits
+## Deploy on Vercel
 
-- Account email addresses are not verified. Password recovery and email verification are not included.
-- No administrator panel, payments, live chat, project tracking, email delivery service, or workflow execution is included.
-- Rate limiting is in-memory and per connection IP. It is a starter safeguard, not a distributed abuse prevention system. Do not trust arbitrary forwarded-IP headers.
-- SQLite and the rate limiter target a small single-instance deployment. Plan a managed database and shared rate limiter before running multiple instances.
-- Set a privacy/retention policy, backups, email verification/recovery, and operational monitoring before enrolling real clients. The current site is an MVP with temporary content.
-- Google Fonts is loaded for typography, with system font fallbacks. No analytics or tracking scripts are included.
+1. Import the repository `sathish1945-dotcom/stratarix-automation` into Vercel
+   (Framework preset: **Other**). `vercel.json` runs the build, serves `dist/`
+   for static files and routes `/api/*` to the serverless function in `api/`.
+2. Add the environment variables above in **Project → Settings → Environment
+   Variables** (Production and Preview). At minimum: `GEMINI_API_KEY` and either
+   the two Turso values or nothing at all to run on the in-memory database.
+3. Redeploy so the new variables are picked up.
+4. Open the deployment, register an account and try "Remind me to call Arun in 30
+   minutes" — the reply should be tagged **Gemini AI**.
 
-## Files
+Alternatively, host it anywhere Node 24 runs (`npm start`); the server serves the
+frontend and the API from one origin.
 
-`index.html`, `style.css`, `app.js`, and `favicon.svg` contain the website. `server.mjs` serves only those allowlisted assets and the account API. `auth.test.mjs` verifies authentication and security boundaries. `.nojekyll` keeps the GitHub Pages preview static.
+## Honest notes
 
-Reference: [GitHub Pages documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages), [Node.js SQLite API](https://nodejs.org/api/sqlite.html).
+- **Notifications** fire while the site is open in a tab. Delivery when the
+  browser or phone is completely closed needs Web Push (VAPID keys, a scheduler
+  and a stored subscription); that infrastructure is scaffolded but **not
+  active**, and `/api/push/config` reports `enabled: false` until it exists. The
+  interface never claims otherwise.
+- **Sessions** live in the database. Without `DATABASE_PATH` or Turso, an
+  in-memory database means a server restart signs everyone out.
+- **Rate limits** are per instance and in memory: auth 20/min/IP, writes
+  90/min/IP+path, chat 20/min and 300/day per user, reads 300/min.
+- Email addresses are not verified and there is no password recovery yet.
+
+## Security
+
+- The Gemini key is read from the environment on the server; no key appears in
+  the frontend, in tests, or anywhere in the Git history.
+- Password hashing is scrypt with a per-user salt; older raw-hex hashes are
+  upgraded on the next successful sign-in.
+- Writes require a same-origin request plus the `X-Stratarix-Request` header;
+  cross-site submissions are rejected.
+- The static server exposes an explicit allowlist of public files (HTML, CSS, the
+  `js/` and `icons/` trees, the service worker, the manifest, the offline page and
+  `robots.txt`). Source, data files and configuration are never served.
+- Responses carry CSP, HSTS (in production), `nosniff`, `Referrer-Policy`,
+  `X-Frame-Options: DENY` and a Permissions-Policy; API responses are `no-store`;
+  errors are mapped to safe messages and never leak driver or upstream text.
+
+## Layout
+
+| Path | Purpose |
+|---|---|
+| `index.html`, `styles.css`, `js/` | The application shell, the design system and the view modules. |
+| `sw.js`, `manifest.webmanifest`, `offline.html`, `icons/` | PWA: offline shell, install metadata and icons. |
+| `server.mjs` | Node server: static allowlist + API, used by `npm start` and the server tests. |
+| `api/index.js` | Serverless entry point for Vercel. |
+| `src/core/` | Router, auth, tasks, chat, Gemini client, NLP parser, time rules, validation, database drivers. |
+| `tests/` | Unit, API, chat, security, libSQL, server (over a real socket) and jsdom UI suites. |
+| `tools/build-vercel.mjs` | Copies the static allowlist into `dist/` for Vercel. |
