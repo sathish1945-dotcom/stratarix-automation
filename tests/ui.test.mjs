@@ -13,14 +13,17 @@ import { mockGemini, geminiJson } from './helpers.mjs';
 const FAKE_KEY = ['AIza', 'SyTest', 'NotARealKey', '0000000000'].join('');
 const AI_ENV = { GEMINI_API_KEY: FAKE_KEY, GEMINI_MAX_RETRIES: '0', GEMINI_TIMEOUT_MS: '2000' };
 
+/** A date two days out, so the fixture never drifts as the clock moves. */
+const FUTURE_DAY = new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10);
+
 /** The flat JSON contract the Gemini schema asks for (see tests/chat.test.mjs). */
 const TASK_REPLY = {
   intent: 'create_task',
-  reply: 'Added “Submit my assignment” for tomorrow at 8 PM.',
+  reply: 'Added “Submit my assignment”.',
   needs_confirmation: false,
   title: 'Submit my assignment',
   description: 'Physics lab report',
-  due_date: '2026-09-24',
+  due_date: FUTURE_DAY,
   due_time: '20:00',
   all_day: false,
   recurrence: 'none',
@@ -133,10 +136,14 @@ test('assistant: the message shows at once, then the thinking state, then the re
     assert.equal(listing.data.tasks.length, 1);
     assert.equal(listing.data.tasks[0].title, 'Submit my assignment');
     assert.equal(listing.data.tasks[0].priority, 'high');
-    assert.ok(listing.data.tasks[0].dueAt, 'the extracted due date was stored');
+    assert.equal(
+      new Date(listing.data.tasks[0].dueAt).toISOString(),
+      `${FUTURE_DAY}T20:00:00.000Z`,
+      'the date and time extracted from the sentence were stored',
+    );
     assert.ok(ui.$('[data-task-card]'), 'the reply shows the created task');
 
-    // 5. And the dashboard reflects it after the store refresh (tomorrow → Upcoming).
+    // 5. And the dashboard reflects it after the store refresh (two days out → Upcoming).
     await ui.goto('#dashboard');
     await ui.waitFor(() => ui.text('[data-filter="upcoming"] .stat-value') === '1', { label: 'dashboard upcoming count' });
     assert.equal(ui.text('[data-filter="upcoming"] .stat-value'), '1');
@@ -350,6 +357,63 @@ test('the session and tasks survive a reload', async () => {
   } finally {
     second?.teardown();
     first?.teardown();
+  }
+});
+
+test('a static-only copy (no API behind it) explains itself instead of failing everywhere', async () => {
+  // Exactly what GitHub Pages does with /api/*: a plain 404 for every call.
+  const staticHost = async (input) => {
+    const url = String(input);
+    if (url.includes('/api/')) {
+      return new Response('<!doctype html><title>404</title><h1>404</h1>', {
+        status: 404,
+        headers: { 'content-type': 'text/html' },
+      });
+    }
+    return new Response('not found', { status: 404 });
+  };
+
+  await withUI({ uiFetch: staticHost }, async (ui) => {
+    // The marketing page still renders, so the copy is not a blank screen.
+    assert.equal(ui.win.location.hash, '#home');
+    assert.match(ui.text('#view'), /Your day, handled/);
+
+    const notice = ui.$('#backend-notice');
+    assert.ok(notice, 'a notice explains that this copy has no API');
+    assert.match(ui.text('#backend-notice'), /no API, database or AI behind it/);
+    assert.equal(ui.store().backendReachable, false);
+
+    // Sign-in is still visible, but the notice stays in front of the user.
+    await ui.goto('#register');
+    assert.ok(ui.$('#auth-form'), 'the form is shown');
+    assert.ok(ui.$('#backend-notice'), 'and the explanation is still there');
+
+    // Nothing leaked from the host's error page, and no crash.
+    assert.doesNotMatch(ui.text('#view') + ui.text('#backend-notice'), /404|doctype|<!doctype/i);
+    assert.deepEqual(ui.errors, []);
+  });
+});
+
+test('the backend notice clears itself once the API answers again', async () => {
+  let failing = true;
+  const ui = await mountUI({
+    uiFetch: (input, init, { bridge }) =>
+      failing && String(input).includes('/api/')
+        ? Promise.resolve(new Response('gone', { status: 503 }))
+        : bridge(input, init),
+  });
+  try {
+    await ui.waitFor(() => ui.$('#backend-notice'), { label: 'notice for a failing service' });
+    assert.match(ui.text('#backend-notice'), /having trouble|not available/);
+    assert.doesNotMatch(ui.text('#backend-notice'), /503|gone/, 'no raw host error is shown');
+
+    failing = false;
+    ui.click('[data-action="retry-backend"]');
+    await ui.waitFor(() => !ui.$('#backend-notice'), { label: 'notice cleared after recovery' });
+    assert.equal(ui.store().backendReachable, true);
+    assert.deepEqual(ui.errors, []);
+  } finally {
+    ui.teardown();
   }
 });
 

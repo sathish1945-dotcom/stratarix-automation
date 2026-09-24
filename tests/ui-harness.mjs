@@ -55,10 +55,17 @@ class FakeNotification {
   close() {}
 }
 
+/**
+ * @param fetchImpl  transport for the *app's* outbound calls (Gemini etc.)
+ * @param uiFetch    optional override for the *browser's* transport; it receives
+ *                   `(input, init, { bridge, app, origin })` so a test can fail
+ *                   some requests and pass the rest to the real router.
+ */
 export async function mountUI({
   app: providedApp = null,
   env = {},
   fetchImpl = fetch,
+  uiFetch = null,
   cookie = null,
   hash = null,
   windowSize = 1280,
@@ -83,6 +90,8 @@ export async function mountUI({
     offline: false,
     aiConfigured: false,
     aiModel: null,
+    backendReachable: true,
+    backendError: null,
     push: { enabled: false, reason: '' },
   });
 
@@ -158,7 +167,9 @@ export async function mountUI({
   install('sessionStorage', win.sessionStorage);
   install('FormData', win.FormData);
   install('Notification', FakeNotification);
-  install('fetch', bridge);
+  // A custom fetchImpl receives { bridge, app, origin } so a test can fail some
+  // requests itself and pass the rest through to the real router.
+  install('fetch', uiFetch ? (input, init) => uiFetch(input, init, { bridge, app, origin }) : bridge);
   install('getComputedStyle', win.getComputedStyle.bind(win));
   install('matchMedia', win.matchMedia);
   install('requestAnimationFrame', win.requestAnimationFrame.bind(win));
@@ -203,6 +214,8 @@ export async function mountUI({
     errors,
     requests,
     notifications: FakeNotification,
+    /** The in-process transport to the real router. */
+    bridge,
     jar: () => jar,
     setCookie: (value) => {
       jar = value;

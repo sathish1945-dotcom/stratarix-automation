@@ -990,6 +990,19 @@ body[data-compact="true"] { --section-gap: clamp(14px, 2vw, 22px); --pad-card: c
 .offline-page .ico-lg { color: var(--brand-500); margin-inline: auto; }
 .offline-page h1 { font-size: var(--fs-h1); margin: 4px 0 0; }
 
+/* ------------------------------------------- Missing-backend / update notice */
+.app-notice {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px clamp(14px, 3vw, 22px);
+  background: var(--warn-soft); color: var(--text);
+  border-bottom: 1px solid color-mix(in srgb, var(--warn-500) 30%, transparent);
+  font-size: var(--fs-sm);
+}
+.app-notice .ico { color: var(--warn-500); flex: none; margin-top: 2px; }
+.app-notice strong { display: block; }
+.app-notice p { margin: 2px 0 0; color: var(--muted); max-width: 78ch; }
+.app-notice .btn { flex: none; }
+
 /* ---------------------------------------------- Service-worker update bar */
 .app-update {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;

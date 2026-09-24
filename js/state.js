@@ -32,5 +32,9 @@ export const appStore = createStore({
   offline: false,
   aiConfigured: false,
   aiModel: null,
+  // False when the frontend is served without its API behind it (for example a
+  // static GitHub Pages copy, or a Node deployment that is down).
+  backendReachable: true,
+  backendError: null,
   push: { enabled: false, reason: '' },
 });

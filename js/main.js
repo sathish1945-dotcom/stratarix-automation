@@ -558,6 +558,13 @@ async function handleAction(action, element) {
       break;
     }
 
+    case 'retry-backend': {
+      const recovered = await checkBackend();
+      if (recovered) toast('Back online — the assistant is ready.', 'success');
+      else toast('Still no response from the service.', 'warn');
+      break;
+    }
+
     case 'reload-app':
       location.reload();
       break;
@@ -569,6 +576,62 @@ async function handleAction(action, element) {
 
     default:
       break;
+  }
+}
+
+/**
+ * The interface needs its API. When it is missing — a static copy such as the
+ * GitHub Pages preview, or a server that is down — say so plainly instead of
+ * letting every button fail with a generic error.
+ */
+function backendNotice(error) {
+  if (!error) return ''; // the API is healthy: nothing to announce
+  if (error.offline) return ''; // the offline bar already explains this case
+  const status = error?.status || 0;
+  const staticHost = status === 404 || status === 405 || status === 501;
+  const title = staticHost ? 'Accounts and the assistant are not available on this copy' : 'The service is having trouble right now';
+  const body = staticHost
+    ? 'This copy of AI Life Manager is served as static files, so it has no API, database or AI behind it. Everything you see here is the real interface — open the Node/Vercel deployment of this repository to register, chat and save tasks.'
+    : 'AI Life Manager could not reach its API. Your data is safe; this page will work again once the service responds.';
+  return `<div class="app-notice is-warn" id="backend-notice" role="status">
+    ${icon('alert')}
+    <div class="grow"><strong>${title}</strong><p class="text-sm">${body}</p></div>
+    <button class="btn btn-ghost btn-sm" type="button" data-action="retry-backend">Try again</button>
+  </div>`;
+}
+
+function renderBackendNotice(error) {
+  const node = $('#backend-notice');
+  const markup = backendNotice(error);
+  if (!markup) {
+    node?.remove();
+    return;
+  }
+  if (node) {
+    node.outerHTML = markup;
+    return;
+  }
+  $('.main-col')?.insertAdjacentHTML('afterbegin', markup);
+}
+
+/** Fetch the public configuration; report whether the API answered. */
+async function checkBackend() {
+  try {
+    const config = await api.config();
+    appStore.set({
+      config,
+      aiConfigured: Boolean(config.ai?.configured),
+      aiModel: config.ai?.model || null,
+      push: config.push || { enabled: false, reason: '' },
+      backendReachable: true,
+      backendError: null,
+    });
+    renderBackendNotice(null);
+    return true;
+  } catch (error) {
+    appStore.set({ aiConfigured: false, backendReachable: false, backendError: error });
+    renderBackendNotice(error);
+    return false;
   }
 }
 
@@ -601,17 +664,7 @@ async function boot() {
 
   window.addEventListener('hashchange', () => render());
 
-  try {
-    const config = await api.config();
-    appStore.set({
-      config,
-      aiConfigured: Boolean(config.ai?.configured),
-      aiModel: config.ai?.model || null,
-      push: config.push || { enabled: false, reason: '' },
-    });
-  } catch {
-    appStore.set({ aiConfigured: false });
-  }
+  await checkBackend();
 
   try {
     const { user } = await api.me();
